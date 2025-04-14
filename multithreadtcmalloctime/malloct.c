@@ -3,25 +3,23 @@
 #include <stdlib.h>
 #include <mach/mach_time.h>
 #include <time.h>
-#include "../rename.h"
-#define ITERATION 10
+
+#define ITERATION 1000000
 #define MAX_SIZE 1024
 
 // Thread function to measure malloc/free time
 void* threadfunction(void* arg) {
-    srand(time(NULL));
     int (*matrix)[2] = (int (*)[2])arg; // Cast the argument to a 2D array
-    //mach_timebase_info_data_t info;
-    //mach_timebase_info(&info);
+    mach_timebase_info_data_t info;
+    mach_timebase_info(&info);
 
     for (int i = 0; i < ITERATION; i++) {
         size_t size = rand() % MAX_SIZE + 1;
 
-       // uint64_t ts1 = mach_absolute_time();
-        int* ptr = MALLOC(size);
-      //  uint64_t ts2 = mach_absolute_time();
-        FREE(ptr);
-        /*
+        uint64_t ts1 = mach_absolute_time();
+        int* ptr = malloc(size);
+        uint64_t ts2 = mach_absolute_time();
+        free(ptr);
         uint64_t ts3 = mach_absolute_time();
 
         uint64_t malloc_time = (ts2 - ts1) * info.numer / info.denom;
@@ -29,7 +27,6 @@ void* threadfunction(void* arg) {
 
         matrix[i][0] = (int)malloc_time; // Store malloc time
         matrix[i][1] = (int)free_time;  // Store free time
-        */
     }
 
     return NULL; // Return NULL to match the expected signature
@@ -45,13 +42,14 @@ int main() {
         return 1;
     }
 
+    srand(time(NULL)); // Seed the random number generator
 
     // Allocate memory for matrices
-    int (*matrix1)[2] = malloc(ITERATION * 2 * sizeof(int));
-    int (*matrix2)[2] = malloc(ITERATION * 2 * sizeof(int));
-    int (*matrix3)[2] = malloc(ITERATION * 2 * sizeof(int));
-    int (*matrix4)[2] = malloc(ITERATION * 2 * sizeof(int));
-    int (*matrix5)[2] = malloc(ITERATION * 2 * sizeof(int));
+    uint64_t (*matrix1)[2] = malloc(ITERATION *  sizeof(uint64_t[2]));
+    uint64_t (*matrix2)[2] = malloc(ITERATION *  sizeof(uint64_t[2]));
+    uint64_t (*matrix3)[2] = malloc(ITERATION * sizeof(uint64_t[2]));
+    uint64_t (*matrix4)[2] = malloc(ITERATION *  sizeof(uint64_t[2]));
+    uint64_t (*matrix5)[2] = malloc(ITERATION *  sizeof(uint64_t[2]));
 
     if (matrix1 == NULL || matrix2 == NULL || matrix3 == NULL || matrix4 == NULL || matrix5 == NULL) {
         printf("Memory allocation failed!\n");
@@ -73,7 +71,7 @@ int main() {
     pthread_join(tid4, NULL);
     pthread_join(tid5, NULL);
 
-    /*
+    
     fprintf(fptr, "THREAD 1\n");
     fprintf(fptr2, "THREAD 1\n");
     for (int p = 0; p < ITERATION; p++) {
@@ -121,6 +119,6 @@ int main() {
     fclose(fptr2);
 
     printf("All threads have finished.\n");
-    */
+
     return 0;
 }

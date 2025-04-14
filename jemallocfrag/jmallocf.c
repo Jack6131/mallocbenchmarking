@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <jemalloc/jemalloc.h>
+#include "../rename.h"
+
 
 #define NUM_ALLOCS 1000
 #define MAX_SIZE 1024
@@ -15,9 +16,9 @@ void measure_internal_fragmentation() {
     // Allocate memory
     for (int i = 0; i < NUM_ALLOCS; i++) {
         size_t size = rand() % MAX_SIZE + 1;  // Random size between 1 and MAX_SIZE
-        pointers[i] = je_malloc(size);        // Use jemalloc's malloc
+        pointers[i] = MALLOC(size);        // Use jemalloc's malloc
         total_allocated += size;
-        total_used += je_malloc_usable_size(pointers[i]);  // Get actual allocated size
+        total_used += SIZEOFMALLOC(pointers[i]);  // Get actual allocated size
     }
 
 
@@ -29,7 +30,7 @@ void measure_internal_fragmentation() {
 }
 
 int main() {
-
+    printf("%s",MALLOCLOGGING);
     measure_internal_fragmentation();
     return 0;
 }
