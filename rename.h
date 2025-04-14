@@ -4,7 +4,7 @@
 
 
 
-
+//_WIN32 IDK if it works rn 
 #if defined(_WIN32)
 #include <windows.h>
 #include <stdint.h>
